@@ -24,13 +24,21 @@ window.addEventListener('mousemove', (event) => {
     cursor.y = clientY / sizes.height;
 })
 
+/** Meshes */
 // meshDepthMaterial
 const material = new THREE.MeshStandardMaterial({ color : 0xffffff })
 const geometry = new THREE.BoxGeometry(2, 2, 2);
 
 const cubeMesh = new THREE.Mesh(geometry, material);
-
 scene.add(cubeMesh);
+
+// Plane Material
+const planeMateral = new THREE.MeshStandardMaterial({ color : 0xffffff })
+const planeGeom = new THREE.PlaneGeometry(7, 7)
+const planeMesh = new THREE.Mesh(planeGeom, planeMateral)
+planeMesh.position.set(0, -2, 0)
+planeMesh.rotation.set(-1.5, 0,0)
+scene.add(planeMesh)
 
 /**
  * Light
@@ -101,6 +109,7 @@ controls.enableDamping = true
  */
 
 
+// camera.lookAt(planeMesh.position)
 
 
 // Clock
