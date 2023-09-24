@@ -56,7 +56,7 @@ scene.add(planeMesh)
 /** Directional light */
 const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.3)
 directionalLight.position.set(2,2,0)
-scene.add(directionalLight)
+// scene.add(directionalLight)
 
 
 /** Ambient light */
@@ -77,7 +77,7 @@ pointLight.position.set(1.8, -0.5, 1)
 /** point light helper */
 
 const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight)
-scene.add(directionalLightHelper)
+// scene.add(directionalLightHelper)
 
 /** RectArea Light */
 const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 3, 2, 1)
@@ -85,19 +85,18 @@ rectAreaLight.position.set(-1.5, 0, 1.5)
 rectAreaLight.lookAt(new THREE.Vector3())
 // scene.add(rectAreaLight)
 
-/** Spotlight */
 
-const spotlight = new THREE.SpotLight(0x78ff00, 0.5, 10, Math.PI * 0.4, 0.25, 1)
-spotlight.position.set(0,2,3)
-// scene.add(spotlight)
 
 
 /** 
  * Shadow Logic 
 */
 
+// 1. directional light
 planeMesh.receiveShadow = true;
 sphereMesh.castShadow = true
+
+
 directionalLight.castShadow = true
 
 directionalLight.shadow.mapSize.width = 1024
@@ -110,14 +109,41 @@ directionalLight.shadow.camera.bottom = -1.4
 directionalLight.shadow.camera.left = -1.4
 directionalLight.shadow.radius = 10
 
+// 2. SpotLight
+const spotlight = new THREE.SpotLight(0xffffff, 0.4, 10, Math.PI * 0.3)
+spotlight.position.set(0,2,2)
+spotlight.castShadow = true
+
+
+spotlight.shadow.mapSize.width = 512
+spotlight.shadow.mapSize.height = 512
+
+spotlight.shadow.camera.fov = 25
+spotlight.shadow.camera.near = 1
+spotlight.shadow.camera.far = 10
+
+
+scene.add(spotlight)
+scene.add(spotlight.target)
+
+    // camera helper
+const spotlightCameraHelper = new THREE.CameraHelper(spotlight.shadow.camera)
+scene.add(spotlightCameraHelper)
 
 const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
+
+
 
 // hiding the camera helper
 directionalLightCameraHelper.visible = false
 scene.add(directionalLightCameraHelper)
 
-// setting up camera
+
+
+
+/** 
+    Setting up Main Camera 
+*/
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height)
 camera.position.z = 10
 scene.add(camera)
@@ -131,7 +157,6 @@ renderer.shadowMap.enabled = true
 
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
 
 
 // orbit controls
