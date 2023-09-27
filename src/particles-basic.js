@@ -16,36 +16,59 @@ const sizes = {
 }
 
 
+
 /**
  * Particles
  */
+
 // Geometry
 const particlesGeometry = new THREE.BufferGeometry()
-const count = 500
+const count = 5000
 
+// setting positions
 const positions = new Float32Array(count * 3)
+const colors = new Float32Array(count * 3)
 
 for(let i = 0; i < count; i ++) {
-    positions[i] = Math.random()
-}
+    positions[i] = (Math.random() - 0.5) * 15
 
+    // colors
+    colors[i] = Math.random()
+}
 particlesGeometry.setAttribute(
     'position',
     new THREE.BufferAttribute(positions, 3)
 )
-
-
+// setting color of each particle
+particlesGeometry.setAttribute(
+    'color',
+    new THREE.BufferAttribute(colors, 3)
+)
 // Material
-const particlesMaterial = new THREE.PointsMaterial({ size : 0.02, sizeAttenuation : true })
+const particlesMaterial = new THREE.PointsMaterial({
+    size : 0.1,
+    sizeAttenuation : true,
+    // color : "red"
+})
 
-// points
-const particles = new THREE.Points(particlesGeometry, particlesMaterial)
-scene.add(particles)
+particlesMaterial.vertexColors = true
 
 
+let particles = new THREE.Points(particlesGeometry, particlesMaterial);
 
+// material texture
 
+const textureLoader = new THREE.TextureLoader()
+textureLoader.load('/images/circle-texture.png', (texture) => {
+    // particlesMaterial.transparent = true;
+    particlesMaterial.map = texture;
 
+    particlesMaterial.alphaTest = 0.001;
+
+    // particlesMaterial.depthTest = false
+
+    scene.add(particles)
+})
 
 
 
@@ -77,12 +100,31 @@ controls.enableDamping = true
 /**
  * Clock (Main function)
  */
+
+const clock = new THREE.Clock()
 let time = Date.now()
+console.log(particlesGeometry.attributes.position.array);
+
+
 const tick = () => {
 
     // time
     const currentTime = Date.now()
     const deltaTime = currentTime - time;
+
+    const elapsedTime = clock.getElapsedTime()
+
+    // particles.rotation.y = elapsedTime * 0.2;
+
+    for( let i = 0; i < count * 3; i ++ ) {
+        const i3 = i  * 3;
+        const xPosition = particlesGeometry.attributes.position.array[i3 + 0];
+
+        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + xPosition);
+        
+    }
+
+    particlesGeometry.attributes.position.needsUpdate = true
 
     time = currentTime
     // update orbitol controls
